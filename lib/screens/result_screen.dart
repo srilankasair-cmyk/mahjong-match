@@ -58,93 +58,98 @@ class _ResultContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isVictory = args.isVictory;
-    // Design reference: 402 × 874 px
     final screenH = MediaQuery.of(context).size.height -
         MediaQuery.of(context).padding.top -
         MediaQuery.of(context).padding.bottom;
-    final screenW = MediaQuery.of(context).size.width;
-    final s = math.min(screenH / 874, screenW / 402);
 
-    return SizedBox(
-      width: double.infinity,
-      height: double.infinity,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 53 * s),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: (isVictory ? 187 : 181) * s),
-            // Icon: sad or happy face
-            SizedBox(
-              width: 90 * s,
-              height: 90 * s,
-              child: CustomPaint(
-                painter: _FacePainter(isSmiling: isVictory),
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 480),
+        child: LayoutBuilder(builder: (context, constraints) {
+          final s = math.min(screenH / 874, constraints.maxWidth / 402);
+          return SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 53 * s),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: (isVictory ? 187 : 181) * s),
+                  // Icon: sad or happy face
+                  SizedBox(
+                    width: 90 * s,
+                    height: 90 * s,
+                    child: CustomPaint(
+                      painter: _FacePainter(isSmiling: isVictory),
+                    ),
+                  ),
+                  SizedBox(height: 28 * s),
+                  // Title
+                  Text(
+                    isVictory ? 'Succeed' : 'Defeated',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.playfairDisplay(
+                      fontSize: 57.72 * s,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                      height: 1.1,
+                    ),
+                  ),
+                  SizedBox(height: 20 * s),
+                  // Decorative divider
+                  _DividerRow(scale: s),
+                  SizedBox(height: 18 * s),
+                  // Score label
+                  Text(
+                    'Score',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.playfairDisplay(
+                      fontSize: 24 * s,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 12 * s),
+                  // Score value
+                  Text(
+                    '${args.score}',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.playfairDisplay(
+                      fontSize: 57.72 * s,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                      height: 1.1,
+                    ),
+                  ),
+                  const Spacer(),
+                  // Play again button
+                  _ActionButton(
+                    label: 'Play again',
+                    filled: true,
+                    scale: s,
+                    onTap: () => Navigator.pushReplacementNamed(
+                      context,
+                      '/game',
+                      arguments: GameConfig.all
+                          .firstWhere((c) => c.mode == args.level),
+                    ),
+                  ),
+                  SizedBox(height: 14 * s),
+                  // Home Menu button
+                  _ActionButton(
+                    label: 'Home Menu',
+                    filled: false,
+                    scale: s,
+                    onTap: () => Navigator.pushNamedAndRemoveUntil(
+                        context, '/', (_) => false),
+                  ),
+                  SizedBox(height: 60 * s),
+                ],
               ),
             ),
-            SizedBox(height: 28 * s),
-            // Title
-            Text(
-              isVictory ? 'Succeed' : 'Defeated',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.playfairDisplay(
-                fontSize: 57.72 * s,
-                fontWeight: FontWeight.w400,
-                color: Colors.black,
-                height: 1.1,
-              ),
-            ),
-            SizedBox(height: 20 * s),
-            // Decorative divider
-            _DividerRow(scale: s),
-            SizedBox(height: 18 * s),
-            // Score label
-            Text(
-              'Score',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.playfairDisplay(
-                fontSize: 24 * s,
-                fontWeight: FontWeight.w400,
-                color: Colors.black,
-              ),
-            ),
-            SizedBox(height: 12 * s),
-            // Score value
-            Text(
-              '${args.score}',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.playfairDisplay(
-                fontSize: 57.72 * s,
-                fontWeight: FontWeight.w400,
-                color: Colors.black,
-                height: 1.1,
-              ),
-            ),
-            const Spacer(),
-            // Play again button
-            _ActionButton(
-              label: 'Play again',
-              filled: true,
-              scale: s,
-              onTap: () => Navigator.pushReplacementNamed(
-                context,
-                '/game',
-                arguments: GameConfig.all
-                    .firstWhere((c) => c.mode == args.level),
-              ),
-            ),
-            SizedBox(height: 14 * s),
-            // Home Menu button
-            _ActionButton(
-              label: 'Home Menu',
-              filled: false,
-              scale: s,
-              onTap: () =>
-                  Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false),
-            ),
-            SizedBox(height: 60 * s),
-          ],
-        ),
+          );
+        }),
       ),
     );
   }

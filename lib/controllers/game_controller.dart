@@ -406,12 +406,43 @@ class GameController extends ChangeNotifier {
   }
 
   void _checkVictory() {
-    if (tilePool.isEmpty &&
-        boardTileCount == 0 &&
-        handTileCount == 0) {
+    if (tilePool.isNotEmpty || boardTileCount != 0) return;
+    // Pool and board are exhausted — win if hand is clear OR hand is stuck
+    if (handTileCount == 0 || !_canHandFormAnyMatch()) {
       isVictory = true;
       pendingSounds.add(SoundEvent.gameEnd);
     }
+  }
+
+  /// Returns true if the current hand tiles can still form at least one Pung
+  /// or Chow, i.e. there are moves left to play.
+  bool _canHandFormAnyMatch() {
+    // Check Pung: 3 tiles with the same matchKey
+    final counts = <String, int>{};
+    for (final tile in handSlots) {
+      if (tile == null) continue;
+      counts[tile.matchKey] = (counts[tile.matchKey] ?? 0) + 1;
+      if (counts[tile.matchKey]! >= 3) return true;
+    }
+
+    // Check Chow: 3 consecutive numbers within the same suit
+    for (final suit in [TileSuit.man, TileSuit.pin, TileSuit.sou]) {
+      final nums = handSlots
+          .where((t) => t != null && t.suit == suit)
+          .map((t) => t!.number)
+          .toList()
+        ..sort();
+      for (int i = 0; i < nums.length - 2; i++) {
+        for (int j = i + 1; j < nums.length - 1; j++) {
+          if (nums[j] != nums[i] + 1) continue;
+          for (int k = j + 1; k < nums.length; k++) {
+            if (nums[k] == nums[j] + 1) return true;
+          }
+        }
+      }
+    }
+
+    return false;
   }
 
   void _checkGameOver() {

@@ -97,28 +97,33 @@ class _RulesFullDialog extends StatelessWidget {
     return Dialog.fullscreen(
       backgroundColor: _kPageBg,
       child: SafeArea(
-        child: Column(
-          children: [
-            const _RulesHeader(),
-            const Divider(height: 1, thickness: 1, color: _kDivider),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: const [
-                    _BasicsCard(),
-                    SizedBox(height: 12),
-                    _ScoringCard(),
-                    SizedBox(height: 12),
-                    _IdentifyCard(),
-                    SizedBox(height: 12),
-                    _MagicCard(),
-                  ],
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
+            child: Column(
+              children: [
+                const _RulesHeader(),
+                const Divider(height: 1, thickness: 1, color: _kDivider),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: const [
+                        _BasicsCard(),
+                        SizedBox(height: 12),
+                        _ScoringCard(),
+                        SizedBox(height: 12),
+                        _IdentifyCard(),
+                        SizedBox(height: 12),
+                        _MagicCard(),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -242,6 +247,21 @@ class _BasicsCard extends StatelessWidget {
         const SizedBox(height: 14),
         // Hand slot diagram
         const _HandDiagram(),
+        const SizedBox(height: 20),
+
+        // ── How to Win ──
+        Text('How to Win',
+            style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: _kText)),
+        const SizedBox(height: 6),
+        Text.rich(
+          TextSpan(style: body, children: [
+            const TextSpan(text: 'Clear all tiles from the board and hand to win. You also win if the draw area runs out of tiles and your remaining hand tiles can no longer form a '),
+            TextSpan(text: 'Chow', style: bold),
+            const TextSpan(text: ' or '),
+            TextSpan(text: 'Pung', style: bold),
+            const TextSpan(text: '.'),
+          ]),
+        ),
       ],
     );
   }
