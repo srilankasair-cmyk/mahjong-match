@@ -37,6 +37,11 @@ class GameController extends ChangeNotifier {
   /// Sounds queued since the last notification; the UI reads and clears this.
   final List<SoundEvent> pendingSounds = [];
 
+  /// Kong tracking: set after a Pung so the very next click on the same tile
+  /// type triggers a Kong (+500).
+  bool _pungReadyForKong = false;
+  String? _lastPungMatchKey;
+
   GameController(this.config) {
     _initGame();
   }
@@ -58,6 +63,8 @@ class GameController extends ChangeNotifier {
     lastMagicRemovedTileIds = [];
     isMagicAnimating = false;
     pendingSounds.clear();
+    _pungReadyForKong = false;
+    _lastPungMatchKey = null;
     _fillBoardFromPool();
   }
 
@@ -143,6 +150,8 @@ class GameController extends ChangeNotifier {
 
     // Magic tiles are consumed immediately on click
     if (tile.isMagic && config.hasMagicTiles) {
+      _pungReadyForKong = false;
+      _lastPungMatchKey = null;
       lastMagicRemovedTileIds = [tile.id]; // magic tile itself fades too
       lastMatchedTiles = [tile];            // drives the floating tile animation
       lastMatchLabel = 'Magic';
@@ -159,6 +168,26 @@ class GameController extends ChangeNotifier {
       notifyListeners();
       return;
     }
+
+    // Kong: after a Pung, if the very next click matches the Pung tile → +500
+    if (_pungReadyForKong && tile.matchKey == _lastPungMatchKey) {
+      board[row][col] = null;
+      clearedTiles++;
+      score += 500;
+      lastEffectMessage = 'Kong! +500';
+      lastMatchLabel = 'Kong';
+      lastMatchedTiles = [tile];
+      lastMagicRemovedTileIds = [];
+      _pungReadyForKong = false;
+      _lastPungMatchKey = null;
+      pendingSounds.add(SoundEvent.pung);
+      _afterTileRemoved();
+      return;
+    }
+
+    // Any non-Kong normal tile click resets the Kong opportunity
+    _pungReadyForKong = false;
+    _lastPungMatchKey = null;
 
     _addToHand(tile, row, col);
   }
@@ -215,12 +244,16 @@ class GameController extends ChangeNotifier {
         // Capture before removing — the UI will animate these departing tiles
         lastMatchedTiles = indices.map((i) => handSlots[i]!).toList();
         lastMatchLabel = 'Pung';
+        final pungKey = entry.key;
         for (final idx in indices) {
           handSlots[idx] = null;
         }
         score += 100;
         lastEffectMessage = 'Pung! +100';
         pendingSounds.add(SoundEvent.pung);
+        // Enable Kong: next click on the same tile type triggers +500
+        _lastPungMatchKey = pungKey;
+        _pungReadyForKong = true;
         return true;
       }
     }
@@ -268,58 +301,59 @@ class GameController extends ChangeNotifier {
   // ─── Magic effects ─────────────────────────────────────────────────────
 
   void _applyMagicEffect(Tile tile, int trigRow, int trigCol) {
-    void rm(int r, int c) {
+    // Moves a board tile to the end of tilePool (tile is deferred, not cleared).
+    void moveToPool(int r, int c) {
       if (r < 0 || r >= 5 || c < 0 || c >= 7) return;
       if (board[r][c] != null) {
         lastMagicRemovedTileIds.add(board[r][c]!.id);
+        tilePool.add(board[r][c]!); // send to END of pool
         board[r][c] = null;
-        clearedTiles++;
-        score += 10;
+        // Do NOT increment clearedTiles — the tile will return from the pool.
       }
     }
 
     switch (tile.suit) {
-      case TileSuit.east: // Clear self's row to the right
+      case TileSuit.east: // Remove self; send the tile immediately to the RIGHT to pool
         pendingSounds.add(SoundEvent.magicWind);
-        for (int c = trigCol + 1; c < 7; c++) { rm(trigRow, c); }
+        moveToPool(trigRow, trigCol + 1);
         break;
 
-      case TileSuit.west: // Clear self's row to the left
+      case TileSuit.west: // Remove self; send the tile immediately to the LEFT to pool
         pendingSounds.add(SoundEvent.magicWind);
-        for (int c = trigCol - 1; c >= 0; c--) { rm(trigRow, c); }
+        moveToPool(trigRow, trigCol - 1);
         break;
 
-      case TileSuit.south: // Clear self's column downward
+      case TileSuit.south: // Remove self; send the tile directly BELOW to pool
         pendingSounds.add(SoundEvent.magicWind);
-        for (int r = trigRow + 1; r < 5; r++) { rm(r, trigCol); }
+        moveToPool(trigRow + 1, trigCol);
         break;
 
-      case TileSuit.north: // Clear self's column upward
+      case TileSuit.north: // Remove self; send the tile directly ABOVE to pool
         pendingSounds.add(SoundEvent.magicWind);
-        for (int r = trigRow - 1; r >= 0; r--) { rm(r, trigCol); }
+        moveToPool(trigRow - 1, trigCol);
         break;
 
-      case TileSuit.redDragon: // Clear 4 orthogonal neighbours
+      case TileSuit.redDragon: // 中 — send 4 orthogonal neighbours to pool (up→down→left→right)
         pendingSounds.add(SoundEvent.magicWind);
-        rm(trigRow - 1, trigCol);
-        rm(trigRow + 1, trigCol);
-        rm(trigRow, trigCol - 1);
-        rm(trigRow, trigCol + 1);
+        moveToPool(trigRow - 1, trigCol); // up
+        moveToPool(trigRow + 1, trigCol); // down
+        moveToPool(trigRow, trigCol - 1); // left
+        moveToPool(trigRow, trigCol + 1); // right
         break;
 
-      case TileSuit.whiteDragon: // Clear all 8 surrounding neighbours (including diagonals)
+      case TileSuit.whiteDragon: // 白板 — send surrounding 8 tiles to pool (clockwise)
         pendingSounds.add(SoundEvent.magicDisappear);
-        rm(trigRow - 1, trigCol - 1);
-        rm(trigRow - 1, trigCol);
-        rm(trigRow - 1, trigCol + 1);
-        rm(trigRow,     trigCol - 1);
-        rm(trigRow,     trigCol + 1);
-        rm(trigRow + 1, trigCol - 1);
-        rm(trigRow + 1, trigCol);
-        rm(trigRow + 1, trigCol + 1);
+        moveToPool(trigRow - 1, trigCol - 1); // top-left
+        moveToPool(trigRow - 1, trigCol);     // top
+        moveToPool(trigRow - 1, trigCol + 1); // top-right
+        moveToPool(trigRow,     trigCol + 1); // right
+        moveToPool(trigRow + 1, trigCol + 1); // bottom-right
+        moveToPool(trigRow + 1, trigCol);     // bottom
+        moveToPool(trigRow + 1, trigCol - 1); // bottom-left
+        moveToPool(trigRow,     trigCol - 1); // left
         break;
 
-      case TileSuit.greenDragon: // Shuffle tiles and refill board
+      case TileSuit.greenDragon: // 发财 — shuffle all tiles on screen and fill every empty slot
         pendingSounds.add(SoundEvent.magicShuffle);
         _shuffleAndRefill();
         break;
@@ -332,19 +366,19 @@ class GameController extends ChangeNotifier {
   String _magicEffectName(Tile tile) {
     switch (tile.suit) {
       case TileSuit.east:
-        return 'East Wind — row cleared right!';
+        return 'East Wind — right tile sent to pool!';
       case TileSuit.west:
-        return 'West Wind — row cleared left!';
+        return 'West Wind — left tile sent to pool!';
       case TileSuit.south:
-        return 'South Wind — column cleared down!';
+        return 'South Wind — tile below sent to pool!';
       case TileSuit.north:
-        return 'North Wind — column cleared up!';
+        return 'North Wind — tile above sent to pool!';
       case TileSuit.redDragon:
-        return 'The Blast — 4 neighbours cleared!';
+        return '中 — 4 neighbours sent to pool!';
       case TileSuit.whiteDragon:
-        return 'Pure Void — 8 surrounding tiles cleared!';
+        return '白板 — 8 surrounding tiles sent to pool!';
       case TileSuit.greenDragon:
-        return 'Fortune — board shuffled!';
+        return '发财 — board shuffled and refilled!';
       default:
         return '';
     }

@@ -64,7 +64,7 @@ class _ResultContent extends StatelessWidget {
 
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 480),
+        constraints: const BoxConstraints(maxWidth: 560),
         child: LayoutBuilder(builder: (context, constraints) {
           final s = math.min(screenH / 874, constraints.maxWidth / 402);
           return SizedBox(
@@ -96,7 +96,21 @@ class _ResultContent extends StatelessWidget {
                       height: 1.1,
                     ),
                   ),
-                  SizedBox(height: 20 * s),
+                  SizedBox(height: 10 * s),
+                  // Mode name
+                  Text(
+                    GameConfig.all
+                        .firstWhere((c) => c.mode == args.level)
+                        .displayName,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.playfairDisplay(
+                      fontSize: 18 * s,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black54,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  SizedBox(height: 14 * s),
                   // Decorative divider
                   _DividerRow(scale: s),
                   SizedBox(height: 18 * s),

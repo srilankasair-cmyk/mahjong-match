@@ -1,14 +1,16 @@
-enum LevelMode { basic, advanced, challenge }
+enum LevelMode { basic, advanced, challenge, nightmare }
 
 class GameConfig {
   final LevelMode mode;
   final int handSlots;
   final bool hasMagicTiles;
+  final bool isNightmare;
 
   const GameConfig({
     required this.mode,
     required this.handSlots,
     required this.hasMagicTiles,
+    this.isNightmare = false,
   });
 
   static const GameConfig basic = GameConfig(
@@ -29,7 +31,14 @@ class GameConfig {
     hasMagicTiles: true,
   );
 
-  static const List<GameConfig> all = [basic, advanced, challenge];
+  static const GameConfig nightmare = GameConfig(
+    mode: LevelMode.nightmare,
+    handSlots: 7,
+    hasMagicTiles: true,
+    isNightmare: true,
+  );
+
+  static const List<GameConfig> all = [basic, advanced, challenge, nightmare];
 
   String get displayName {
     switch (mode) {
@@ -39,6 +48,8 @@ class GameConfig {
         return 'Fun Mode';
       case LevelMode.challenge:
         return 'Challenge Mode';
+      case LevelMode.nightmare:
+        return 'Nightmare Mode';
     }
   }
 
@@ -50,6 +61,8 @@ class GameConfig {
         return '14 hand slots\nMagic tiles';
       case LevelMode.challenge:
         return '7 hand slots\nMagic tiles';
+      case LevelMode.nightmare:
+        return '7 hand slots\nMagic tiles\nLocked tiles hidden';
     }
   }
 }

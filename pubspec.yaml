@@ -37,6 +37,7 @@ dependencies:
   shared_preferences: ^2.3.2
   audioplayers: ^6.1.0
   google_fonts: ^6.2.1
+  flutter_svg: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +63,12 @@ flutter:
 
   assets:
     - assets/images/tiles.png
+    - assets/images/icon_basic.svg
+    - assets/images/icon_fun.svg
+    - assets/images/icon_challenge.svg
+    - assets/images/icon_nightmare.svg
+    - assets/images/board_diagram.png
+    - assets/images/clear_diagram.png
     - assets/audio/
 
   # An image asset can refer to one or more resolution-specific "variants", see

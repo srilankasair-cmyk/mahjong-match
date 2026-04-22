@@ -19,8 +19,6 @@ const Color _kCardBg    = Colors.white;
 const Color _kText      = Colors.black;
 const Color _kDivider   = Color(0xFFE0E0E0);
 const Color _kGold      = Color(0xFFCF8E00);
-const Color _kEdgeTile  = Color(0xFFE6E6E6);
-const Color _kInnerTile = Color(0xFFD9D9D9);
 
 // ── Sprite sheet constants ────────────────────────────────────────────────────
 
@@ -99,7 +97,7 @@ class _RulesFullDialog extends StatelessWidget {
       child: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 480),
+            constraints: const BoxConstraints(maxWidth: 560),
             child: Column(
               children: [
                 const _RulesHeader(),
@@ -226,8 +224,15 @@ class _BasicsCard extends StatelessWidget {
           ]),
         ),
         const SizedBox(height: 14),
-        // 7×5 board diagram
-        const _BoardDiagram(),
+        // 7×5 board illustration
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.asset(
+            'assets/images/board_diagram.png',
+            width: double.infinity,
+            fit: BoxFit.contain,
+          ),
+        ),
 
         const SizedBox(height: 20),
 
@@ -245,8 +250,15 @@ class _BasicsCard extends StatelessWidget {
           ]),
         ),
         const SizedBox(height: 14),
-        // Hand slot diagram
-        const _HandDiagram(),
+        // Hand & refilling illustration
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.asset(
+            'assets/images/clear_diagram.png',
+            width: double.infinity,
+            fit: BoxFit.contain,
+          ),
+        ),
         const SizedBox(height: 20),
 
         // ── How to Win ──
@@ -267,96 +279,6 @@ class _BasicsCard extends StatelessWidget {
   }
 }
 
-// 7×5 board diagram — edge tiles highlighted in gold, inner tiles greyed.
-class _BoardDiagram extends StatelessWidget {
-  const _BoardDiagram();
-
-  @override
-  Widget build(BuildContext context) {
-    const rows = 5; const cols = 7;
-    const tW = 24.0; const tH = 36.0; const gap = 4.0;
-    return SizedBox(
-      width:  cols * (tW + gap) - gap,
-      height: rows * (tH + gap) - gap,
-      child: Stack(
-        children: [
-          for (int r = 0; r < rows; r++)
-            for (int c = 0; c < cols; c++)
-              Positioned(
-                left: c * (tW + gap),
-                top:  r * (tH + gap),
-                child: _DiagramTile(
-                  exposed: r == 0 || r == rows - 1 || c == 0 || c == cols - 1,
-                  w: tW, h: tH,
-                ),
-              ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DiagramTile extends StatelessWidget {
-  final bool exposed;
-  final double w, h;
-  const _DiagramTile({required this.exposed, required this.w, required this.h});
-
-  @override
-  Widget build(BuildContext context) => Container(
-    width: w, height: h,
-    decoration: BoxDecoration(
-      color:  exposed ? _kEdgeTile  : _kInnerTile,
-      borderRadius: BorderRadius.circular(4),
-      border: exposed ? Border.all(color: _kGold) : null,
-    ),
-  );
-}
-
-// 7×2 hand-slot diagram with a connection line through the first row.
-class _HandDiagram extends StatelessWidget {
-  const _HandDiagram();
-
-  @override
-  Widget build(BuildContext context) {
-    const cols = 7; const rows = 2;
-    const tW = 24.0; const tH = 36.0; const gap = 4.0;
-    final totalW = cols * (tW + gap) - gap;
-    final totalH = rows * (tH + gap) - gap;
-
-    return SizedBox(
-      width: totalW, height: totalH,
-      child: Stack(
-        children: [
-          for (int r = 0; r < rows; r++)
-            for (int c = 0; c < cols; c++)
-              Positioned(
-                left: c * (tW + gap),
-                top:  r * (tH + gap),
-                child: Container(
-                  width: tW, height: tH,
-                  decoration: BoxDecoration(
-                    color: _kEdgeTile,
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: _kDivider),
-                  ),
-                ),
-              ),
-          // Horizontal line indicating a matched group (Chow/Pung connection)
-          Positioned(
-            left: tW * 0.4,
-            top:  tH * 0.5 - 0.75,
-            child: Container(
-              width: 3 * (tW + gap) - tW * 0.4 + tW * 0.6,
-              height: 1.5,
-              color: Colors.black54,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 // ── 🀄 SCORING & MATCHES ──────────────────────────────────────────────────────
 
 class _ScoringCard extends StatelessWidget {
@@ -365,7 +287,7 @@ class _ScoringCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _SectionCard(
-      title: '🀄 SCORING & MATCHES',
+      title: '🏆 SCORING & MATCHES',
       children: [
         Text(
           'Match tiles in your hand to score points and clear space:',
@@ -404,6 +326,31 @@ class _ScoringCard extends StatelessWidget {
         const SizedBox(height: 12),
         // Pung tiles: 3× dots-1 (row=1, col=0)
         const _TileRow(entries: [(1, 0), (1, 0), (1, 0)]),
+
+        const SizedBox(height: 24),
+
+        // ── Kong ──
+        Text('Kong (Quad)',
+            style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: _kText)),
+        const SizedBox(height: 6),
+        Text.rich(
+          TextSpan(
+            style: GoogleFonts.inter(fontSize: 16, height: 1.55, color: _kText),
+            children: [
+              const TextSpan(text: 'After a '),
+              TextSpan(text: 'Pung', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, height: 1.55, color: _kText)),
+              const TextSpan(text: ', if your very next tile click is the same type as the Pung, it triggers a Kong. The 4th tile is consumed instantly.'),
+            ],
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text('+500 points',
+            style: GoogleFonts.inter(
+                fontSize: 16, fontWeight: FontWeight.w900,
+                fontStyle: FontStyle.italic, color: _kGold)),
+        const SizedBox(height: 12),
+        // Kong tiles: 4× dots-1 (row=1, col=0)
+        const _TileRow(entries: [(1, 0), (1, 0), (1, 0), (1, 0)]),
 
         const SizedBox(height: 24),
 
@@ -491,7 +438,7 @@ class _IdentifyCard extends StatelessWidget {
     final body = GoogleFonts.inter(fontSize: 16, height: 1.55, color: _kText);
 
     return _SectionCard(
-      title: '🀄 IDENTIFY THE TILES',
+      title: '📖 IDENTIFY THE TILES',
       children: [
         Text('The Three Suits (Numbers 1-9)',
             style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: _kText)),
@@ -574,13 +521,13 @@ class _MagicCard extends StatelessWidget {
   const _MagicCard();
 
   static const _entries = [
-    (TileSuit.east,        'East Wind',  'Clears entire row to the RIGHT →'),
-    (TileSuit.south,       'South Wind', 'Clears entire column DOWNWARD ↓'),
-    (TileSuit.west,        'West Wind',  'Clears entire row to the LEFT ←'),
-    (TileSuit.north,       'North Wind', 'Clears entire column UPWARD ↑'),
-    (TileSuit.redDragon,   'Red',        'Clears 4 adjacent tiles cross pattern'),
-    (TileSuit.greenDragon, 'Green',      'Scrambles and refills the board'),
-    (TileSuit.whiteDragon, 'White',      'Clears surrounding 8 tiles 3×3 area'),
+    (TileSuit.east,        'East Wind',  'Removes itself; sends the tile immediately to its RIGHT to the end of the draw pile'),
+    (TileSuit.south,       'South Wind', 'Removes itself; sends the tile directly BELOW it to the end of the draw pile'),
+    (TileSuit.west,        'West Wind',  'Removes itself; sends the tile immediately to its LEFT to the end of the draw pile'),
+    (TileSuit.north,       'North Wind', 'Removes itself; sends the tile directly ABOVE it to the end of the draw pile'),
+    (TileSuit.redDragon,   'Red (中)',   'Removes itself; sends the 4 orthogonal neighbours (↑↓←→) to the end of the draw pile'),
+    (TileSuit.whiteDragon, 'White (白板)', 'Removes itself; sends the surrounding 8 tiles (clockwise) to the end of the draw pile'),
+    (TileSuit.greenDragon, 'Green (发财)', 'Removes itself; all tiles on screen are randomly reshuffled and every empty slot is filled'),
   ];
 
   @override

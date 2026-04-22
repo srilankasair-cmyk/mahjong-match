@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/game_config.dart';
 import '../services/progress_service.dart';
@@ -182,14 +183,28 @@ class _LevelCard extends StatefulWidget {
 class _LevelCardState extends State<_LevelCard> {
   bool _hovered = false;
 
-  IconData get _icon {
+  Widget get _iconWidget {
     switch (widget.config.mode) {
       case LevelMode.basic:
-        return Icons.eco_outlined;
+        return SvgPicture.asset(
+          'assets/images/icon_basic.svg',
+          width: 36, height: 36,
+        );
       case LevelMode.advanced:
-        return Icons.lightbulb_outline_rounded;
+        return SvgPicture.asset(
+          'assets/images/icon_fun.svg',
+          width: 36, height: 36,
+        );
       case LevelMode.challenge:
-        return Icons.rocket_launch_outlined;
+        return SvgPicture.asset(
+          'assets/images/icon_challenge.svg',
+          width: 36, height: 36,
+        );
+      case LevelMode.nightmare:
+        return SvgPicture.asset(
+          'assets/images/icon_nightmare.svg',
+          width: 36, height: 36,
+        );
     }
   }
 
@@ -220,7 +235,7 @@ class _LevelCardState extends State<_LevelCard> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(_icon, size: 36, color: Colors.black),
+                  _iconWidget,
                   const SizedBox(width: 28),
                   Expanded(
                     child: Column(
@@ -234,7 +249,7 @@ class _LevelCardState extends State<_LevelCard> {
                               child: Text(
                                 widget.config.displayName.toUpperCase(),
                                 style: GoogleFonts.playfairDisplay(
-                                  fontSize: 20,
+                                  fontSize: 22,
                                   fontWeight: FontWeight.w400,
                                   color: Colors.black,
                                   letterSpacing: 1,
@@ -249,7 +264,7 @@ class _LevelCardState extends State<_LevelCard> {
                         Text(
                           widget.config.description,
                           style: const TextStyle(
-                            fontSize: 14,
+                            fontSize: 16,
                             color: Color(0xBF000000),
                             height: 1.55,
                           ),

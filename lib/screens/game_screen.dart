@@ -525,6 +525,8 @@ class _GameScreenState extends State<GameScreen> {
         !_controller.isVictory &&
         _controller.isTileClickable(row, col);
 
+    final faceDown = widget.config.isNightmare && !clickable;
+
     return AnimatedPositioned(
       key: ValueKey(tileId),
       duration: const Duration(milliseconds: 280),
@@ -542,6 +544,7 @@ class _GameScreenState extends State<GameScreen> {
           clickable: clickable,
           width: tileW,
           height: tileH,
+          faceDown: faceDown,
         ),
       ),
     );
@@ -693,6 +696,7 @@ class _TileCell extends StatelessWidget {
   final double width;
   final double height;
   final bool isHandSlot;
+  final bool faceDown;
 
   const _TileCell({
     required this.tile,
@@ -700,6 +704,7 @@ class _TileCell extends StatelessWidget {
     required this.width,
     required this.height,
     this.isHandSlot = false,
+    this.faceDown = false,
   });
 
   @override
@@ -714,6 +719,34 @@ class _TileCell extends StatelessWidget {
           border: isHandSlot
               ? Border.all(color: Colors.black12, width: 0.8)
               : null,
+        ),
+      );
+    }
+
+    // Nightmare mode: locked tiles are rendered face-down (content hidden).
+    if (faceDown) {
+      return Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: const Color(0xFF2E7D32),
+          borderRadius: BorderRadius.circular(3),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black45,
+              blurRadius: 3,
+              offset: Offset(1, 2),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(width * 0.14),
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: const Color(0xFF1B5E20), width: 1.2),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
         ),
       );
     }
