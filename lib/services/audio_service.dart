@@ -19,6 +19,9 @@ class AudioService {
   String? _currentBgm; // tracks which BGM source is active
   String? _bgmWanted;  // tracks which BGM should be playing (for autoplay retry)
   bool _bgmPlaying = false; // actual playback state
+  bool _bgmEnabled = true;  // user-controlled mute toggle
+
+  bool get isBgmEnabled => _bgmEnabled;
 
   static const double _menuBgmVolume = 0.10;
   static const double _gameBgmVolume = 0.02;
@@ -35,6 +38,7 @@ class AudioService {
   /// Start (or keep playing) the menu / level-select background music.
   Future<void> playMenuBgm() async {
     _bgmWanted = 'menu';
+    if (!_bgmEnabled) return;
     if (_currentBgm == 'menu' && _bgmPlaying) return;
     _currentBgm = 'menu';
     try {
@@ -47,6 +51,7 @@ class AudioService {
   /// Start (or keep playing) the in-game background music.
   Future<void> playGameBgm() async {
     _bgmWanted = 'game';
+    if (!_bgmEnabled) return;
     if (_currentBgm == 'game' && _bgmPlaying) return;
     _currentBgm = 'game';
     try {
@@ -56,8 +61,23 @@ class AudioService {
     } catch (_) {}
   }
 
+  /// Toggle BGM on/off.
+  Future<void> toggleBgm() async {
+    _bgmEnabled = !_bgmEnabled;
+    if (_bgmEnabled) {
+      _currentBgm = null; // reset so play methods restart
+      if (_bgmWanted == 'menu') await playMenuBgm();
+      if (_bgmWanted == 'game') await playGameBgm();
+    } else {
+      _currentBgm = null;
+      try { await _bgmPlayer.stop(); } catch (_) {}
+      _bgmPlaying = false;
+    }
+  }
+
   /// Call this on any user interaction to retry BGM blocked by browser autoplay policy.
   Future<void> onUserInteraction() async {
+    if (!_bgmEnabled) return;
     if (_bgmWanted != null && !_bgmPlaying) {
       _currentBgm = null; // reset guard so play methods don't skip
       if (_bgmWanted == 'menu') await playMenuBgm();

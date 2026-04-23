@@ -67,6 +67,9 @@ flutter:
     - assets/images/icon_fun.svg
     - assets/images/icon_challenge.svg
     - assets/images/icon_nightmare.svg
+    - assets/images/icon_mute.svg
+    - assets/images/icon_music.svg
+    - assets/images/icon_rules.svg
     - assets/images/board_diagram.png
     - assets/images/clear_diagram.png
     - assets/audio/

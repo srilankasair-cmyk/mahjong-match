@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../controllers/game_controller.dart';
 import '../models/game_config.dart';
@@ -21,6 +22,7 @@ class _GameScreenState extends State<GameScreen> {
   String? _effectMessage;
   Timer? _effectTimer;
   bool _navigating = false;
+  bool _bgmEnabled = true;
 
   // Animation state: tracks the display position of every tile on the board.
   // (row, col) — row can be -1 for tiles entering from above the board.
@@ -219,8 +221,35 @@ class _GameScreenState extends State<GameScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.help_outline_rounded, size: 20),
-            color: Colors.black54,
+            icon: SvgPicture.asset(
+              _bgmEnabled
+                  ? 'assets/images/icon_music.svg'
+                  : 'assets/images/icon_mute.svg',
+              width: 22,
+              height: 22,
+              colorFilter: const ColorFilter.mode(
+                Colors.black54,
+                BlendMode.srcIn,
+              ),
+            ),
+            tooltip: _bgmEnabled ? 'Mute Music' : 'Unmute Music',
+            onPressed: () async {
+              await AudioService.instance.toggleBgm();
+              setState(() {
+                _bgmEnabled = AudioService.instance.isBgmEnabled;
+              });
+            },
+          ),
+          IconButton(
+            icon: SvgPicture.asset(
+              'assets/images/icon_rules.svg',
+              width: 22,
+              height: 22,
+              colorFilter: const ColorFilter.mode(
+                Colors.black54,
+                BlendMode.srcIn,
+              ),
+            ),
             tooltip: 'How to Play',
             onPressed: () => _showRules(context),
           ),
