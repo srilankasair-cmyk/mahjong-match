@@ -20,8 +20,9 @@ class AudioService {
   String? _bgmWanted;  // tracks which BGM should be playing (for autoplay retry)
   bool _bgmPlaying = false; // actual playback state
 
-  static const double _bgmVolume = 0.05;
-  static const double _sfxVolume = 0.85;
+  static const double _menuBgmVolume = 0.10;
+  static const double _gameBgmVolume = 0.05;
+  static const double _sfxVolume = 1.0;
 
   // ─── SFX round-robin pool (avoids creating a new player per tap) ─────
 
@@ -37,7 +38,7 @@ class AudioService {
     if (_currentBgm == 'menu' && _bgmPlaying) return;
     _currentBgm = 'menu';
     try {
-      await _bgmPlayer.setVolume(_bgmVolume);
+      await _bgmPlayer.setVolume(_menuBgmVolume);
       await _bgmPlayer.setReleaseMode(ReleaseMode.loop);
       await _bgmPlayer.play(AssetSource('audio/bgm_menu.mp3'));
     } catch (_) {}
@@ -49,7 +50,7 @@ class AudioService {
     if (_currentBgm == 'game' && _bgmPlaying) return;
     _currentBgm = 'game';
     try {
-      await _bgmPlayer.setVolume(_bgmVolume);
+      await _bgmPlayer.setVolume(_gameBgmVolume);
       await _bgmPlayer.setReleaseMode(ReleaseMode.loop);
       await _bgmPlayer.play(AssetSource('audio/bgm_game.mp3'));
     } catch (_) {}
