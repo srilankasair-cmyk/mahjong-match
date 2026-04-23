@@ -72946,7 +72946,7 @@ break}n.b="menu"
 p=4
 m=n.a
 s=7
-return A.x(m.mT(0.1),$async$jW)
+return A.x(m.mT(0.05),$async$jW)
 case 7:s=8
 return A.x(m.mR(B.fy),$async$jW)
 case 8:s=9
@@ -72971,7 +72971,7 @@ break}n.b="game"
 p=4
 m=n.a
 s=7
-return A.x(m.mT(0.1),$async$mu)
+return A.x(m.mT(0.05),$async$mu)
 case 7:s=8
 return A.x(m.mR(B.fy),$async$mu)
 case 8:s=9
