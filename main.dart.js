@@ -72950,7 +72950,7 @@ return A.x(m.mV(0.1),$async$jX)
 case 7:s=8
 return A.x(m.mT(B.fy),$async$jX)
 case 8:s=9
-return A.x(m.mv(new A.pO("audio/bgm_menu.mp3",null)),$async$jX)
+return A.x(m.mv(new A.pO("assets/audio/bgm_menu.mp3",null)),$async$jX)
 case 9:p=2
 s=6
 break
@@ -72975,7 +72975,7 @@ return A.x(m.mV(0.05),$async$mw)
 case 7:s=8
 return A.x(m.mT(B.fy),$async$mw)
 case 8:s=9
-return A.x(m.mv(new A.pO("audio/bgm_game.mp3",null)),$async$mw)
+return A.x(m.mv(new A.pO("assets/audio/bgm_game.mp3",null)),$async$mw)
 case 9:p=2
 s=6
 break
@@ -73033,13 +73033,13 @@ break
 case 6:case 1:return A.C(q,r)
 case 2:return A.B(o.at(-1),r)}})
 return A.D($async$lc,r)},
-a6D(a){switch(a.a){case 0:return"audio/sfx_tile.mp3"
-case 1:return"audio/sfx_chow.mp3"
-case 2:return"audio/sfx_pung.mp3"
-case 3:return"audio/sfx_wind.mp3"
-case 4:return"audio/sfx_vanish.mp3"
-case 5:return"audio/sfx_shuffle.mp3"
-case 6:return"audio/sfx_end.mp3"}}}
+a6D(a){switch(a.a){case 0:return"assets/audio/sfx_tile.mp3"
+case 1:return"assets/audio/sfx_chow.mp3"
+case 2:return"assets/audio/sfx_pung.mp3"
+case 3:return"assets/audio/sfx_wind.mp3"
+case 4:return"assets/audio/sfx_vanish.mp3"
+case 5:return"assets/audio/sfx_shuffle.mp3"
+case 6:return"assets/audio/sfx_end.mp3"}}}
 A.Vw.prototype={
 $1(a){this.a.d=a===B.fu},
 $S:478}
