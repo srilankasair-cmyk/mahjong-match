@@ -26,7 +26,7 @@ jobs:
         run: flutter pub get
 
       - name: Build web
-        run: flutter build web --release --base-href /mahjong-match/
+        run: flutter clean && flutter build web --release --base-href /mahjong-match/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
