@@ -14,7 +14,7 @@ class AudioService {
   final AudioPlayer _bgmPlayer = AudioPlayer();
   String? _currentBgm; // tracks which BGM source is active
 
-  static const double _bgmVolume = 0.45;
+  static const double _bgmVolume = 0.30;
   static const double _sfxVolume = 0.85;
 
   // ─── SFX round-robin pool (avoids creating a new player per tap) ─────
