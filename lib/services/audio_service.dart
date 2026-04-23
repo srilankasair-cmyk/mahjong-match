@@ -40,7 +40,7 @@ class AudioService {
     try {
       await _bgmPlayer.setVolume(_menuBgmVolume);
       await _bgmPlayer.setReleaseMode(ReleaseMode.loop);
-      await _bgmPlayer.play(AssetSource('audio/bgm_menu.mp3'));
+      await _bgmPlayer.play(AssetSource('assets/audio/bgm_menu.mp3'));
     } catch (_) {}
   }
 
@@ -52,7 +52,7 @@ class AudioService {
     try {
       await _bgmPlayer.setVolume(_gameBgmVolume);
       await _bgmPlayer.setReleaseMode(ReleaseMode.loop);
-      await _bgmPlayer.play(AssetSource('audio/bgm_game.mp3'));
+      await _bgmPlayer.play(AssetSource('assets/audio/bgm_game.mp3'));
     } catch (_) {}
   }
 
@@ -104,13 +104,13 @@ class AudioService {
 
   String? _sfxPath(SoundEvent event) {
     switch (event) {
-      case SoundEvent.tileToHand:     return 'audio/sfx_tile.mp3';
-      case SoundEvent.chow:           return 'audio/sfx_chow.mp3';
-      case SoundEvent.pung:           return 'audio/sfx_pung.mp3';
-      case SoundEvent.magicWind:      return 'audio/sfx_wind.mp3';
-      case SoundEvent.magicDisappear: return 'audio/sfx_vanish.mp3';
-      case SoundEvent.magicShuffle:   return 'audio/sfx_shuffle.mp3';
-      case SoundEvent.gameEnd:        return 'audio/sfx_end.mp3';
+      case SoundEvent.tileToHand:     return 'assets/audio/sfx_tile.mp3';
+      case SoundEvent.chow:           return 'assets/audio/sfx_chow.mp3';
+      case SoundEvent.pung:           return 'assets/audio/sfx_pung.mp3';
+      case SoundEvent.magicWind:      return 'assets/audio/sfx_wind.mp3';
+      case SoundEvent.magicDisappear: return 'assets/audio/sfx_vanish.mp3';
+      case SoundEvent.magicShuffle:   return 'assets/audio/sfx_shuffle.mp3';
+      case SoundEvent.gameEnd:        return 'assets/audio/sfx_end.mp3';
     }
   }
 }
