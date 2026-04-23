@@ -21,7 +21,7 @@ class AudioService {
   bool _bgmPlaying = false; // actual playback state
 
   static const double _menuBgmVolume = 0.10;
-  static const double _gameBgmVolume = 0.05;
+  static const double _gameBgmVolume = 0.02;
   static const double _sfxVolume = 1.0;
 
   // ─── SFX round-robin pool (avoids creating a new player per tap) ─────
