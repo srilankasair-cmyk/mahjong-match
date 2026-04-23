@@ -72971,7 +72971,7 @@ break}n.b="game"
 p=4
 m=n.a
 s=7
-return A.x(m.mV(0.05),$async$mw)
+return A.x(m.mV(0.02),$async$mw)
 case 7:s=8
 return A.x(m.mT(B.fy),$async$mw)
 case 8:s=9
