@@ -15,9 +15,8 @@ class MahjongMatchApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () => AudioService.instance.onUserInteraction(),
+    return Listener(
+      onPointerDown: (_) => AudioService.instance.onUserInteraction(),
       child: MaterialApp(
         title: 'Mahjong Match',
         debugShowCheckedModeBanner: false,
