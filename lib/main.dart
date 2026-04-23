@@ -5,6 +5,8 @@ import 'screens/game_screen.dart';
 import 'screens/result_screen.dart';
 import 'models/game_config.dart';
 import 'services/audio_service.dart';
+import 'services/audio_web_unlock.dart'
+    if (dart.library.io) 'services/audio_web_unlock_stub.dart';
 
 void main() {
   runApp(const MahjongMatchApp());
@@ -16,7 +18,10 @@ class MahjongMatchApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Listener(
-      onPointerDown: (_) => AudioService.instance.onUserInteraction(),
+      onPointerDown: (_) {
+        unlockWebAudioContext(); // synchronous — must run before any await
+        AudioService.instance.onUserInteraction();
+      },
       child: MaterialApp(
         title: 'Mahjong Match',
         debugShowCheckedModeBanner: false,

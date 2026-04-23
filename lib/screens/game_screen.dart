@@ -207,22 +207,23 @@ class _GameScreenState extends State<GameScreen> {
       backgroundColor: const Color(0xFFEDEDED),
       appBar: AppBar(
         backgroundColor: Colors.white,
+        foregroundColor: Colors.black87,
         elevation: 0,
-        automaticallyImplyLeading: false,
-        titleSpacing: 20,
+        centerTitle: true,
         title: Row(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
           children: [
             Text(
               '${_controller.score}',
               style: const TextStyle(
-                fontSize: 28,
+                fontSize: 26,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF2E7D32),
               ),
             ),
-            const SizedBox(width: 5),
+            const SizedBox(width: 4),
             const Text(
               'pts',
               style: TextStyle(
