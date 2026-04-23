@@ -6,15 +6,21 @@ import '../models/sound_event.dart';
 /// never crash the app — just place the correct .mp3 files in
 /// assets/audio/ when they are ready.
 class AudioService {
-  AudioService._();
+  AudioService._() {
+    _bgmPlayer.onPlayerStateChanged.listen((state) {
+      _bgmPlaying = state == PlayerState.playing;
+    });
+  }
   static final AudioService instance = AudioService._();
 
   // ─── BGM player (looping) ────────────────────────────────────────────
 
   final AudioPlayer _bgmPlayer = AudioPlayer();
   String? _currentBgm; // tracks which BGM source is active
+  String? _bgmWanted;  // tracks which BGM should be playing (for autoplay retry)
+  bool _bgmPlaying = false; // actual playback state
 
-  static const double _bgmVolume = 0.30;
+  static const double _bgmVolume = 0.10;
   static const double _sfxVolume = 0.85;
 
   // ─── SFX round-robin pool (avoids creating a new player per tap) ─────
@@ -27,7 +33,8 @@ class AudioService {
 
   /// Start (or keep playing) the menu / level-select background music.
   Future<void> playMenuBgm() async {
-    if (_currentBgm == 'menu') return;
+    _bgmWanted = 'menu';
+    if (_currentBgm == 'menu' && _bgmPlaying) return;
     _currentBgm = 'menu';
     try {
       await _bgmPlayer.setVolume(_bgmVolume);
@@ -38,13 +45,23 @@ class AudioService {
 
   /// Start (or keep playing) the in-game background music.
   Future<void> playGameBgm() async {
-    if (_currentBgm == 'game') return;
+    _bgmWanted = 'game';
+    if (_currentBgm == 'game' && _bgmPlaying) return;
     _currentBgm = 'game';
     try {
       await _bgmPlayer.setVolume(_bgmVolume);
       await _bgmPlayer.setReleaseMode(ReleaseMode.loop);
       await _bgmPlayer.play(AssetSource('audio/bgm_game.mp3'));
     } catch (_) {}
+  }
+
+  /// Call this on any user interaction to retry BGM blocked by browser autoplay policy.
+  Future<void> onUserInteraction() async {
+    if (_bgmWanted != null && !_bgmPlaying) {
+      _currentBgm = null; // reset guard so play methods don't skip
+      if (_bgmWanted == 'menu') await playMenuBgm();
+      if (_bgmWanted == 'game') await playGameBgm();
+    }
   }
 
   /// Stop background music (clears tracking so the next call restarts it).
