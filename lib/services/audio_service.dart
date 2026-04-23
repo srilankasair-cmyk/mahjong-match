@@ -20,7 +20,7 @@ class AudioService {
   String? _bgmWanted;  // tracks which BGM should be playing (for autoplay retry)
   bool _bgmPlaying = false; // actual playback state
 
-  static const double _bgmVolume = 0.10;
+  static const double _bgmVolume = 0.05;
   static const double _sfxVolume = 0.85;
 
   // ─── SFX round-robin pool (avoids creating a new player per tap) ─────
