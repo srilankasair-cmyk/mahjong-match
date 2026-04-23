@@ -78,8 +78,12 @@ class AudioService {
   /// Call this on any user interaction to retry BGM blocked by browser autoplay policy.
   Future<void> onUserInteraction() async {
     if (!_bgmEnabled) return;
-    if (_bgmWanted != null && !_bgmPlaying) {
-      _currentBgm = null; // reset guard so play methods don't skip
+    if (_bgmWanted == null) return;
+    // Use the player's actual state as source of truth instead of cached flag
+    final notActuallyPlaying = _bgmPlayer.state != PlayerState.playing;
+    if (notActuallyPlaying) {
+      _currentBgm = null;
+      _bgmPlaying = false;
       if (_bgmWanted == 'menu') await playMenuBgm();
       if (_bgmWanted == 'game') await playGameBgm();
     }
